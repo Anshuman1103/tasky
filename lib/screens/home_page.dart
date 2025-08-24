@@ -25,6 +25,17 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
+  // New function to show the modal for editing a task
+  void _showEditTaskModal(Task task) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return NewTaskSheet();
+      },
+    );
+  }
+
   // Helper function to categorize tasks by date
   String _getTaskCategory(DateTime taskTime) {
     final now = DateTime.now();
@@ -147,8 +158,7 @@ class _HomepageState extends State<Homepage> {
                         return TaskTile(
                           task: task,
                           onEdit: () {
-                            // TODO: Implement edit logic
-                            print('Edit task: ${task.title}');
+                            _showEditTaskModal(task);
                           },
                           onDelete: () async {
                             await _taskService.deleteTask(task.id);
