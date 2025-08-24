@@ -4,7 +4,13 @@ import 'package:uuid/uuid.dart';
 import 'package:tasky/models/task.dart';
 
 class NewTaskSheet extends StatefulWidget {
-  const NewTaskSheet({super.key});
+  const NewTaskSheet({
+    super.key,
+    this.taskToEdit,
+  });
+
+  // This parameter is now optional and holds the task to edit
+  final Task? taskToEdit;
 
   @override
   State<NewTaskSheet> createState() => _NewTaskSheetState();
@@ -25,6 +31,18 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
   Priority _selectedPriority = Priority.low;
 
   @override
+  void initState() {
+    super.initState();
+    // Check if a task was passed in for editing
+    if (widget.taskToEdit != null) {
+      // Pre-populate the fields with the existing task's data
+      _titleController.text = widget.taskToEdit!.title;
+      _detailController.text = widget.taskToEdit!.detail ?? '';
+      _selectedPriority = widget.taskToEdit!.priority;
+    }
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _detailController.dispose();
@@ -35,33 +53,43 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
   Future<void> _submitForm() async {
     // Validate all form fields
     if (_formKey.currentState!.validate()) {
-      // Create a new unique ID for the task
-      const uuid = Uuid();
-      final String taskId = uuid.v4();
-
-      // Create a new Task object
-      final newTask = Task(
-        id: taskId,
-        title: _titleController.text.trim(),
-        detail: _detailController.text.trim(),
-        priority: _selectedPriority,
-        isCompleted: false,
-      );
-
-      // Add the new task to Firestore
-      try {
-        await _taskService.addTask(newTask);
-        // Close the modal sheet
-        if (mounted) {
-          Navigator.of(context).pop();
+      // Check if we are editing an existing task or creating a new one
+      if (widget.taskToEdit != null) {
+        // Update existing task
+        final updatedTask = Task(
+          id: widget.taskToEdit!.id,
+          title: _titleController.text.trim(),
+          detail: _detailController.text.trim().isEmpty
+              ? null
+              : _detailController.text.trim(),
+          priority: _selectedPriority,
+          isCompleted: widget.taskToEdit!.isCompleted,
+          time: widget.taskToEdit!.time,
+        );
+        try {
+          await _taskService.updateTask(updatedTask);
+          if (mounted) Navigator.of(context).pop();
+        } catch (e) {
+          print('Error updating task: $e');
         }
-      } catch (e) {
-        // Handle potential errors, e.g., show a snackbar
-        print('Error adding task: $e');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to add task.')),
-          );
+      } else {
+        // Create a new task
+        const uuid = Uuid();
+        final String taskId = uuid.v4();
+        final newTask = Task(
+          id: taskId,
+          title: _titleController.text.trim(),
+          detail: _detailController.text.trim().isEmpty
+              ? null
+              : _detailController.text.trim(),
+          priority: _selectedPriority,
+          isCompleted: false,
+        );
+        try {
+          await _taskService.addTask(newTask);
+          if (mounted) Navigator.of(context).pop();
+        } catch (e) {
+          print('Error adding task: $e');
         }
       }
     }
@@ -71,7 +99,6 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      // Padding to prevent the content from being hidden by the keyboard
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
@@ -82,12 +109,17 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Title Field
+              Text(
+                widget.taskToEdit != null ? "Edit Task" : "Add Task",
+                style: theme.textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.colorScheme.onSurface),
+                    borderSide: BorderSide(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -95,7 +127,8 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   hintText: "Task Title",
-                  hintStyle: TextStyle(color: theme.colorScheme.onSurface),
+                  hintStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
                   fillColor: theme.colorScheme.surface,
                   filled: true,
                 ),
@@ -108,14 +141,13 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
                 },
               ),
               const SizedBox(height: 15),
-
-              // Detail Field
               TextFormField(
                 controller: _detailController,
                 maxLines: 3,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.colorScheme.onSurface),
+                    borderSide: BorderSide(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -123,20 +155,20 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   hintText: "Task Details (optional)",
-                  hintStyle: TextStyle(color: theme.colorScheme.onSurface),
+                  hintStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
                   fillColor: theme.colorScheme.surface,
                   filled: true,
                 ),
                 style: TextStyle(color: theme.colorScheme.onSurface),
               ),
               const SizedBox(height: 15),
-
-              // Priority Dropdown Field
               DropdownButtonFormField<Priority>(
                 value: _selectedPriority,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.colorScheme.onSurface),
+                    borderSide: BorderSide(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -144,7 +176,8 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   hintText: "Priority",
-                  hintStyle: TextStyle(color: theme.colorScheme.onSurface),
+                  hintStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
                   fillColor: theme.colorScheme.surface,
                   filled: true,
                 ),
@@ -167,8 +200,6 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
                 },
               ),
               const SizedBox(height: 25),
-
-              // Submit Button
               SizedBox(
                 width: double.infinity,
                 child: InkWell(
@@ -181,7 +212,7 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
                     ),
                     child: Center(
                       child: Text(
-                        "Add Task",
+                        widget.taskToEdit != null ? "Update Task" : "Add Task",
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: theme.colorScheme.onPrimary,
                         ),

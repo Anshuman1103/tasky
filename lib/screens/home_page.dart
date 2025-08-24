@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky/models/task.dart';
 import 'package:tasky/services/task_services.dart';
-import 'package:tasky/widgets/new_task.dart';
 import 'package:tasky/widgets/task_tile.dart';
+import 'package:tasky/widgets/new_task.dart';
+import 'package:tasky/widgets/filter_sheet.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -15,7 +16,10 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final TaskService _taskService = TaskService();
 
-  void _showAddTaskModal() {
+  // State variable to hold the currently selected filter
+  TaskFilter _currentFilter = TaskFilter.all;
+
+  void _showNewTaskModal() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -25,14 +29,39 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  // New function to show the modal for editing a task
   void _showEditTaskModal(Task task) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return NewTaskSheet();
+        return NewTaskSheet(taskToEdit: task);
       },
+    );
+  }
+
+  void _showFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return FilterSheet(
+          onFilterSelected: (filter) {
+            setState(() {
+              _currentFilter = filter;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  void _showSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("This feature is currently unavailable !"),
+        duration: Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating, // Makes it float
+      ),
     );
   }
 
@@ -109,11 +138,29 @@ class _HomepageState extends State<Homepage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddTaskModal,
+        onPressed: _showNewTaskModal,
         child: const Icon(Icons.add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              onPressed: _showFilterModal,
+              icon: const Icon(Icons.filter_list),
+            ),
+            const SizedBox(width: 48), // Spacer for the FAB
+            IconButton(
+              onPressed: () => _showSnackBar(context),
+              icon: const Icon(Icons.person),
+            ),
+          ],
+        ),
+      ),
       body: StreamBuilder<List<Task>>(
-        stream: _taskService.getTasks(),
+        stream: _taskService.getTasks(filter: _currentFilter),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -136,7 +183,7 @@ class _HomepageState extends State<Homepage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: groupedTasks.keys.map((day) {
                 if (groupedTasks[day]!.isEmpty) {
-                  return const SizedBox.shrink(); // Hide empty sections
+                  return const SizedBox.shrink();
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
