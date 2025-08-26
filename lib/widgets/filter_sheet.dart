@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // Enum to represent the different filter options
 enum TaskFilter {
@@ -23,34 +24,60 @@ class FilterSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Filter Tasks',
-            style: theme.textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 16),
-          // List of filter options
-          _buildFilterOption(context, 'All Tasks', TaskFilter.all, Icons.list),
-          _buildFilterOption(context, 'Completed', TaskFilter.completed,
-              Icons.check_circle_outline),
-          _buildFilterOption(context, 'Incomplete', TaskFilter.incomplete,
-              Icons.circle_outlined),
-          const Divider(),
-          _buildFilterOption(
-              context, 'High Priority', TaskFilter.highPriority, Icons.flag,
-              color: Colors.red),
-          _buildFilterOption(
-              context, 'Medium Priority', TaskFilter.mediumPriority, Icons.flag,
-              color: Colors.amber),
-          _buildFilterOption(
-              context, 'Low Priority', TaskFilter.lowPriority, Icons.flag,
-              color: Colors.blue),
-        ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+      child: Container(
+        padding:
+            const EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Filter Tasks',
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // List of filter options
+            _buildFilterOption(
+                context, 'All Tasks', TaskFilter.all, Icons.dashboard_outlined),
+            _buildFilterOption(context, 'Completed', TaskFilter.completed,
+                Icons.check_circle_outline),
+            _buildFilterOption(context, 'Incomplete', TaskFilter.incomplete,
+                Icons.circle_outlined),
+            const SizedBox(height: 8),
+            const Divider(),
+            const SizedBox(height: 8),
+            _buildFilterOption(
+                context, 'High Priority', TaskFilter.highPriority, Icons.flag,
+                color: const Color.fromARGB(255, 255, 100, 100)),
+            _buildFilterOption(context, 'Medium Priority',
+                TaskFilter.mediumPriority, Icons.flag,
+                color: const Color.fromARGB(255, 255, 195, 100)),
+            _buildFilterOption(
+                context, 'Low Priority', TaskFilter.lowPriority, Icons.flag,
+                color: const Color.fromARGB(255, 100, 150, 255)),
+          ],
+        ),
       ),
     );
   }
@@ -59,14 +86,40 @@ class FilterSheet extends StatelessWidget {
       BuildContext context, String title, TaskFilter filter, IconData icon,
       {Color? color}) {
     final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(icon, color: color ?? theme.colorScheme.onSurface),
-      title: Text(title, style: theme.textTheme.bodyLarge),
-      onTap: () {
-        onFilterSelected(filter);
-        Navigator.of(context)
-            .pop(); // Close the modal sheet after selecting a filter
-      },
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        elevation: 1,
+        child: InkWell(
+          onTap: () {
+            onFilterSelected(filter);
+            Navigator.of(context).pop();
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Row(
+              children: [
+                Icon(icon, color: color ?? theme.colorScheme.onSurface),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

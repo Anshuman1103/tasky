@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tasky/services/task_services.dart';
 import 'package:uuid/uuid.dart';
 import 'package:tasky/models/task.dart';
@@ -95,6 +96,20 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
     }
   }
 
+  // Helper function to get a color for a given priority
+  Color _getPriorityColor(Priority priority) {
+    switch (priority) {
+      case Priority.high:
+        return const Color.fromARGB(255, 255, 100, 100);
+      case Priority.medium:
+        return const Color.fromARGB(255, 255, 195, 100);
+      case Priority.low:
+        return const Color.fromARGB(255, 100, 150, 255);
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -103,125 +118,174 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                widget.taskToEdit != null ? "Edit Task" : "Add Task",
-                style: theme.textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.colorScheme.primary),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: "Task Title",
-                  hintStyle: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
-                  fillColor: theme.colorScheme.surface,
-                  filled: true,
-                ),
-                style: TextStyle(color: theme.colorScheme.onSurface),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a task title';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 15),
-              TextFormField(
-                controller: _detailController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.colorScheme.primary),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: "Task Details (optional)",
-                  hintStyle: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
-                  fillColor: theme.colorScheme.surface,
-                  filled: true,
-                ),
-                style: TextStyle(color: theme.colorScheme.onSurface),
-              ),
-              const SizedBox(height: 15),
-              DropdownButtonFormField<Priority>(
-                value: _selectedPriority,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.colorScheme.primary),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  hintText: "Priority",
-                  hintStyle: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
-                  fillColor: theme.colorScheme.surface,
-                  filled: true,
-                ),
-                dropdownColor: theme.colorScheme.secondary,
-                style: TextStyle(color: theme.colorScheme.onSurface),
-                items: Priority.values.map((Priority priority) {
-                  return DropdownMenuItem<Priority>(
-                    value: priority,
-                    child: Text(
-                      priority.name.toUpperCase(),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+          child: Container(
+            color: theme.colorScheme.surface,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                  );
-                }).toList(),
-                onChanged: (Priority? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _selectedPriority = newValue;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 25),
-              SizedBox(
-                width: double.infinity,
-                child: InkWell(
-                  onTap: _submitForm,
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(12),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    widget.taskToEdit != null ? "Edit Task" : "Add Task",
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
                     ),
-                    child: Center(
-                      child: Text(
-                        widget.taskToEdit != null ? "Update Task" : "Add Task",
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.onPrimary,
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color:
+                                theme.colorScheme.onSurface.withOpacity(0.5)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: theme.colorScheme.primary),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      prefixIcon: Icon(Icons.edit_note_outlined,
+                          color: theme.colorScheme.primary),
+                      hintText: "Task Title",
+                      hintStyle: GoogleFonts.poppins(
+                          color: theme.colorScheme.onSurface.withOpacity(0.7)),
+                      fillColor: const Color.fromARGB(255, 240, 240, 240),
+                      filled: true,
+                    ),
+                    style:
+                        GoogleFonts.poppins(color: theme.colorScheme.onSurface),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a task title';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
+                  TextFormField(
+                    controller: _detailController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color:
+                                theme.colorScheme.onSurface.withOpacity(0.5)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: theme.colorScheme.primary),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      prefixIcon: Icon(Icons.description_outlined,
+                          color: theme.colorScheme.primary),
+                      hintText: "Task Details (optional)",
+                      hintStyle: GoogleFonts.poppins(
+                          color: theme.colorScheme.onSurface.withOpacity(0.7)),
+                      fillColor: const Color.fromARGB(255, 240, 240, 240),
+                      filled: true,
+                    ),
+                    style:
+                        GoogleFonts.poppins(color: theme.colorScheme.onSurface),
+                  ),
+                  const SizedBox(height: 15),
+                  DropdownButtonFormField<Priority>(
+                    value: _selectedPriority,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color:
+                                theme.colorScheme.onSurface.withOpacity(0.5)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: theme.colorScheme.primary),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      hintText: "Priority",
+                      hintStyle: GoogleFonts.poppins(
+                          color: theme.colorScheme.onSurface.withOpacity(0.7)),
+                      fillColor: const Color.fromARGB(255, 240, 240, 240),
+                      filled: true,
+                    ),
+                    dropdownColor: theme.colorScheme.surface,
+                    style: GoogleFonts.poppins(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.w500),
+                    items: Priority.values.map((Priority priority) {
+                      return DropdownMenuItem<Priority>(
+                        value: priority,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.flag,
+                              color: _getPriorityColor(priority),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              priority.name.toUpperCase(),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (Priority? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          _selectedPriority = newValue;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+                  SizedBox(
+                    width: double.infinity,
+                    child: InkWell(
+                      onTap: _submitForm,
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            widget.taskToEdit != null
+                                ? "Update Task"
+                                : "Add Task",
+                            style: GoogleFonts.poppins(
+                              color: theme.colorScheme.onPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
