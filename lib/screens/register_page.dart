@@ -11,7 +11,6 @@ class RegisterPage extends StatefulWidget {
     required this.showLoginPage,
   });
 
-  /// A callback function to navigate back to the login page.
   final VoidCallback showLoginPage;
 
   @override
@@ -19,28 +18,22 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // A GlobalKey to uniquely identify the Form and enable validation.
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for the email, password, and confirm password text fields.
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // A boolean state variable to manage the loading state for the registration button.
   bool _isLoading = false;
 
   @override
   void dispose() {
-    // It's important to dispose of controllers to free up resources
-    // when the State object is removed from the widget tree.
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  /// A helper function to display a red SnackBar with an error message.
   void _showErrorSnackbar(String message) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -61,7 +54,6 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // Set the loading state to true to show the CircularProgressIndicator.
     setState(() {
       _isLoading = true;
     });
@@ -95,7 +87,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current theme to use for colors and styling.
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -217,7 +208,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
                         }
-                        // A basic length check for password validation.
                         if (value.length < 6) {
                           return 'Password must be at least 6 characters long';
                         }

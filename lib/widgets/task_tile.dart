@@ -11,21 +11,11 @@ class TaskTile extends StatelessWidget {
     required this.onToggleComplete,
   });
 
-  /// The task object to display. This must be a Task object imported
-  /// from your project's model file.
   final Task task;
-
-  /// A callback function to be executed when the edit button is pressed.
   final VoidCallback onEdit;
-
-  /// A callback function to be executed when the delete button is pressed.
   final VoidCallback onDelete;
-
-  /// A callback function to be executed when the task is tapped,
-  /// typically to toggle its completion status.
   final VoidCallback onToggleComplete;
 
-  /// A helper function to get the color associated with a task's priority.
   Color getPriorityColor(Priority priority) {
     switch (priority) {
       case Priority.high:
@@ -39,7 +29,6 @@ class TaskTile extends StatelessWidget {
     }
   }
 
-  /// A function to show a confirmation dialog before deleting a task.
   void _showDeleteConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -65,7 +54,6 @@ class TaskTile extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                // Dismiss the dialog without deleting the task.
                 Navigator.of(context).pop();
               },
               child: Text(

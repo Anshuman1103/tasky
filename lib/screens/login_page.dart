@@ -11,14 +11,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Use a GlobalKey to uniquely identify the Form and enable validation.
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for text fields
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // State to manage loading and error messages
   bool _isLoading = false;
 
   @override
@@ -28,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // A helper function to show a snackbar with an error message
   void _showErrorSnackbar(String message) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -41,7 +37,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _signIn() async {
-    // Check if the form is valid before attempting to sign in
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -101,7 +96,6 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // App Icon/Logo
                     Icon(
                       Icons.checklist_rtl_rounded,
                       size: 100,
@@ -197,7 +191,6 @@ class _LoginPageState extends State<LoginPage> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your password';
                         }
-                        // A basic length check for password validation
                         if (value.length < 6) {
                           return 'Password must be at least 6 characters long';
                         }

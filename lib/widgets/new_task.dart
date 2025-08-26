@@ -10,7 +10,6 @@ class NewTaskSheet extends StatefulWidget {
     this.taskToEdit,
   });
 
-  // This parameter is now optional and holds the task to edit
   final Task? taskToEdit;
 
   @override
@@ -18,10 +17,8 @@ class NewTaskSheet extends StatefulWidget {
 }
 
 class _NewTaskSheetState extends State<NewTaskSheet> {
-  // A global key to hold the form state for validation
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for the text fields
   final _titleController = TextEditingController();
   final _detailController = TextEditingController();
 
@@ -50,7 +47,6 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
     super.dispose();
   }
 
-  // Handles form validation and task submission
   Future<void> _submitForm() async {
     // Validate all form fields
     if (_formKey.currentState!.validate()) {
@@ -96,7 +92,6 @@ class _NewTaskSheetState extends State<NewTaskSheet> {
     }
   }
 
-  // Helper function to get a color for a given priority
   Color _getPriorityColor(Priority priority) {
     switch (priority) {
       case Priority.high:
