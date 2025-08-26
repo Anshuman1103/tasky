@@ -1,16 +1,53 @@
-# tasky
+# 📝 Tasky - Task Management Application
 
-A new Flutter project.
+A **modern Flutter application** that provides a **secure user authentication system** with Firebase and an intuitive way to **manage tasks**.  
+Easily **add, edit, delete, and filter tasks** based on **priority** and **completion status** — all stored securely for each authenticated user.  
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+✅ **User Authentication**  
+- 🔐 Secure login and registration with Firebase Authentication  
+- 📧 Email & password-based authentication  
+- ❌ Clear, user-friendly error messages  
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+✅ **Task Management**  
+- ➕ Create, ✏️ Edit, and 🗑️ Delete tasks  
+- 🔍 Filter tasks by **priority** (High, Medium, Low) and **status** (Completed, Pending)  
+- ⏱️ Automatically timestamp tasks  
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+✅ **UI & UX**  
+- 🎨 Clean and responsive design built with Flutter  
+- ⏳ Loading indicators for network requests  
+- 🛡️ Real-time form validation  
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology                | Purpose                                    |
+|---------------------------|--------------------------------------------|
+| **Flutter**               | Cross-platform app development             |
+| **Dart**                  | Programming language                       |
+| **Firebase Authentication** | User authentication and management        |
+| **Cloud Firestore**       | Storing and retrieving user tasks          |
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up **Tasky** on your local machine.
+
+### 🔹 Prerequisites
+- [Flutter SDK](https://flutter.dev/docs/get-started/install)  
+- [Firebase Account](https://firebase.google.com/)  
+
+### 🔹 Installation
+```bash
+# Clone the repository
+git clone https://github.com/Anshuman1103/tasky
+cd tasky
+
+# Install dependencies
+flutter pub get
